@@ -1083,6 +1083,35 @@ def docker_container(registry, xml_parent, data):
         xml_docker, data, mapping, fail_required=True)
 
 
+def job_restrictions(registry, xml_parent, data):
+    """yaml: job-restrictions
+    Requires the Jenkins :jenkins-wiki:`Job Restrictions Plugin
+    <Job+Restrictions+Plugin>`.
+
+    :arg bool prohibit-manual-launch: Prohibits manual launch of the job for
+        all users (default=false).
+
+    Example:
+
+    .. literalinclude::
+        /../../tests/properties/fixtures/job_restrictions_minimal.yaml
+       :language: yaml
+    """
+    job_restrictions = XML.SubElement(
+        xml_parent,
+        'com.synopsys.arc.jenkinsci.plugins.jobrestrictions.jobs.'
+        'JobRestrictionProperty',
+    )
+    restriction_config = XML.SubElement(job_restrictions, 'config')
+    user_id_cause = XML.SubElement(
+        restriction_config, 'userIdCauseRestriction'
+    )
+    XML.SubElement(
+        user_id_cause, 'prohibitManualLaunch'
+    ).text = str(data.get('prohibit-manual-launch', False)).lower()
+    # TODO: plugin implements more options, and combinations.
+
+
 class Properties(jenkins_jobs.modules.base.Base):
     sequence = 20
 
